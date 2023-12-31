@@ -5,20 +5,22 @@ import { reactive } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import { Core as YubinBangoCore } from 'yubinbango-core2';
 
-defineProps({
+const props = defineProps({
+    customer: Object,
     errors: Object
 })
 
 const form = reactive({
-    name: null,
-    kana: null,
-    tel: null,
-    email: null,
-    postcode: null,
-    adderss: null,
-    birthday: null,
-    gender: null,
-    memo: null
+    id: props.customer.id,
+    name: props.customer.name,
+    kana: props.customer.kana,
+    tel: props.customer.tel,
+    email: props.customer.email,
+    postcode: props.customer.postcode,
+    address: props.customer.address,
+    birthday: props.customer.birthday,
+    gender: props.customer.gender,
+    memo: props.customer.memo
 })
 
 const fetchAddress = () => {
@@ -27,21 +29,20 @@ const fetchAddress = () => {
     }
     new YubinBangoCore(String(form.postcode), (value) => {
         form.address = value.region + value.locality + value.street
-        // console.log(value)
     })
 }
 
-const storeCustomer = () => {
-    Inertia.post('/customers', form)
+const updateCustomer = (id) => {
+    Inertia.put(route('customers.update', { customer: id }), form)
 }
 </script>
 
 <template>
-    <Head title="顧客登録" />
+    <Head title="顧客編集" />
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">顧客登録</h2>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">顧客編集</h2>
         </template>
 
         <div class="py-12">
@@ -49,7 +50,7 @@ const storeCustomer = () => {
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
                         <section class="text-gray-600 body-font relative">
-                            <form @submit.prevent="storeCustomer" action="">
+                            <form @submit.prevent="updateCustomer(form.id)" action="">
                                 <div class="container px-5 py-24 mx-auto">
                                     <div class="lg:w-1/2 md:w-2/3 mx-auto">
                                         <div class="flex flex-wrap -m-2">
@@ -124,7 +125,7 @@ const storeCustomer = () => {
         
         
                                             <div class="p-2 w-full">
-                                                <button class="flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">顧客登録</button>
+                                                <button class="flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">更新する</button>
                                             </div>
                                         </div>
                                     </div>
